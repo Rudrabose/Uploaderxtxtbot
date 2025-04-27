@@ -251,3 +251,27 @@ async def account_login(bot: Client, m: Message):
 
 
 bot.run()
+from aiohttp import web
+import asyncio
+from pyrogram import idle
+
+async def handle(request):
+    return web.Response(text="Bot is running!")
+
+async def start_web_server():
+    app = web.Application()
+    app.router.add_get('/', handle)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    port = int(os.environ.get("PORT", 8080))
+    site = web.TCPSite(runner, '0.0.0.0', port)
+    await site.start()
+
+async def main():
+    await bot.start()
+    await start_web_server()
+    await idle()
+    await bot.stop()
+
+if __name__ == "__main__":
+    asyncio.run(main())
